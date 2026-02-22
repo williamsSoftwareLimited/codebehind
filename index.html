@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#eef" />
+    <link rel="icon" href="favicon.svg" type="image/x-icon">
+    <title>codebehind </title>
+    <script src='codebehind.js' defer></script>
+    <script>
+      CSS.registerProperty({
+        name: '--bg-color',
+        syntax: '<color>',
+        inherits: false,
+        initialValue: '#aaa'
+      });
+    </script>
+    <style>
+      body {
+        --bg-color: #aaa;
+        background: linear-gradient( var(--bg-color), #fff );
+        transition: --bg-color 8s ;
+      }
+      body:hover {
+        --bg-color: #045;
+      }
+      code-behind {
+        display: flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+        color: #112;
+        font: bold 5rem 'Raleway';
+        text-shadow: #333 1px 0 10px;
+      }
+      span {
+        padding:4px;
+      }
+      #container {
+        display: flex;        
+        height: 100vh;
+        cursor: default;
+      }
+      #C {
+        scale:300%;
+        color: #122;
+        transform: translate(5px, -2px);
+      }
+      #o{
+        animation: 10s infinite alternate small-o,
+                   15s infinite alternate small-d,
+                   10s infinite alternate small-b;
+      }
+      @keyframes small-o{
+        0%{
+          transform: translate(0px);
+        }
+        50%{
+          transform: translate(-6px);
+        }
+      }
+      #d{  
+        transform: translate(0px, 1px);   
+        animation: 14s infinite alternate small-d;
+      }
+      @keyframes small-d {
+        0%{
+          color: #222;
+        }
+        50%{
+          color: #225;
+        }
+      }
+      #b {
+        animation: 7s infinite alternate small-b;
+        color: #222;
+        transform: translate(0px, 4px);
+      }
+      @keyframes small-b {
+        0%{          
+          scale: 100%;
+          transform: translate(0px, 2px);
+        }
+        50% {          
+          scale: 112%;
+          transform: translate(0px, 4px);
+        }
+      }
+      #e{
+        transform: rotate(3deg);
+      }
+      #h{}
+      #i{}
+      #dot{
+        transform: translate(-52px, -40px);
+        color: #555;
+      }
+      #dot:hover{
+        animation: 1000s infinite alternate dot-rotate;
+      }
+      @keyframes dot-rotate {
+        from {          
+          transform: translate(-52px, -40px) rotate(0deg);
+        }
+        to {           
+          transform: translate(-52px, -42px) rotate(600000deg);
+        }
+      }
+      #n{
+        transform: translate(-62px, 2px);
+      }
+      #end{
+        transform: translate(-60px, 2px);
+      }
+      #end:hover{
+        animation: 4s alternate end-d;
+      }
+      @keyframes end-d {
+        0%{          
+          transform: translate(-60px, 2px) rotate(0deg);
+        }
+        50% {           
+          transform: translate(-65px, 0px) rotate(-20deg);
+        }
+      }
+    </style>
+  </head>
+  <body>
+<div id="container">
+<code-behind>
+  <span id="C">C</span> <span id="o">o</span> <span id="d">d</span> <span id="e">e</span> <span id="b">b</span> <span id="e">e</span> <span id="h">h</span> <span id="i">ı</span> <span id="dot">✺</span> <span id="n">n</span> <span id="end">d</span>
+</code-behind>
+</div>
+<script>// <![CDATA[
+    (() =>{
+        let title = '🂡 ✵ ☺︎ ☕︎ ♘ ⦿ ☆ '
+        const titleRotateId  = setInterval(()=> {
+          title = title.substring(1) + title[0];
+          document.title=title;
+        }, 220);
+      })();
+// ]]></script>
+</body>
+</html>
