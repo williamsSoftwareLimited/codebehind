@@ -90,6 +90,34 @@
         transform: rotate(3deg);
       }
       #h{}
+      .fade-in{
+        display: block;
+        animation: fade-in 3s ease-in forwards;
+      }
+      @keyframes fade-in {
+        0% {
+          opacity: 0.5;
+        }
+
+        100% {
+          opacity: 1;
+          display: block;
+        }
+      }
+      .fade-out{
+        display: block;
+        animation: fade-out 3s ease-out forwards;
+      }
+      @keyframes fade-out {
+        0% {
+          opacity: 1;
+          display: block;
+        }
+
+        100% {
+          opacity: 0.5;
+        }
+      }
       #i{}
       #dot{
         transform: translate(-52px, -40px);
@@ -128,7 +156,8 @@
   <body>
 <div id="container">
 <code-behind>
-  <span id="C">C</span> <span id="o">o</span> <span id="d">d</span> <span id="e">e</span> <span id="b">b</span> <span id="e">e</span> <span id="h">h</span> <span id="i">ı</span> <span id="dot">✺</span> <span id="n">n</span> <span id="end">d</span>
+  <span id="C">C</span> <span id="o">o</span> <span id="d">d</span> <span id="e">e</span> <span id="b">b</span> <span id="e">e</span> 
+  <span class='fade-out' id="h">h</span> <span id="i">ı</span> <span id="dot">✺</span> <span id="n">n</span> <span id="end">d</span>
 </code-behind>
 </div>
 <script>// <![CDATA[
@@ -138,6 +167,17 @@
           title = title.substring(1) + title[0];
           document.title=title;
         }, 220);
+
+        let h_elem = document.getElementById('h');
+        h_elem.addEventListener('click', () =>{
+          if(h_elem.classList[0]==="fade-in"){
+            h_elem.classList.remove('fade-in');
+            h_elem.classList.add('fade-out');
+          } else {
+            h_elem.classList.remove('fade-out');
+            h_elem.classList.add('fade-in');
+          }
+        });
       })();
 // ]]></script>
 </body>
