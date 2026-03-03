@@ -7,7 +7,6 @@ class Codebehind extends HTMLElement {
     //const shadow = this.attachShadow({ mode: "open" });
 
       //shadow.appendChild(style);
-    //changed
   }
 }
 customElements.define("code-behind", Codebehind);
