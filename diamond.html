@@ -1,62 +1,90 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<style>
-  body {
-    margin: 0;
-    background: #020617;
-    display: grid;
-    place-items: center;
-    height: 100vh;
-  }
-
-  canvas {
-    background: #020617;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <title>3D Neon Wireframe Diamond</title>
+  <style>
+    body {
+      margin: 0;
+      background: #020617;
+      overflow: hidden;
+    }
+  </style>
 </head>
 <body>
 
-<canvas id="c" width="300" height="300"></canvas>
+<script type="module">
+  import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
 
-<script>
-const canvas = document.getElementById("c");
-const ctx = canvas.getContext("2d");
+  // Scene
+  const scene = new THREE.Scene();
 
-let angle = 0;
+  // Camera
+  const camera = new THREE.PerspectiveCamera(
+    60,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    100
+  );
+  camera.position.z = 3;
 
-function draw() {
-  // Fade previous frames (trail effect)
-  ctx.fillStyle = "rgba(2, 6, 23, 0.15)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  // Renderer
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  document.body.appendChild(renderer.domElement);
 
-  ctx.save();
-  ctx.translate(150, 150);
-  ctx.rotate(angle);
+  // Geometry
+  const geometry = new THREE.OctahedronGeometry(1);
 
-  // Neon glow
-  ctx.shadowColor = "#22d3ee";
-  ctx.shadowBlur = 35;
-  ctx.fillStyle = "#22d3ee";
+  // Solid diamond
+  const solidMaterial = new THREE.MeshStandardMaterial({
+    color: 0x0ea5e9,
+    roughness: 0.15,
+    metalness: 0.9
+  });
 
-  // Diamond shape
-  ctx.beginPath();
-  ctx.moveTo(0, -50);
-  ctx.lineTo(50, 0);
-  ctx.lineTo(0, 50);
-  ctx.lineTo(-50, 0);
-  ctx.closePath();
-  ctx.fill();
+  const diamond = new THREE.Mesh(geometry, solidMaterial);
+  scene.add(diamond);
 
-  ctx.restore();
+  // Neon wireframe overlay
+  const wireMaterial = new THREE.MeshBasicMaterial({
+    color: 0x22d3ee,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.9
+  });
 
-  angle += 0.04;
-  requestAnimationFrame(draw);
-}
+  const wireframe = new THREE.Mesh(geometry, wireMaterial);
+  wireframe.scale.setScalar(1.01); // prevent z-fighting
+  scene.add(wireframe);
 
-draw();
+  // Lights
+  scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+
+  const light = new THREE.DirectionalLight(0xffffff, 1.2);
+  light.position.set(5, 5, 5);
+  scene.add(light);
+
+  // Animation
+  function animate() {
+    diamond.rotation.x += 0.01;
+    diamond.rotation.y += 0.015;
+
+    wireframe.rotation.copy(diamond.rotation);
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+
+  // Resize
+  window.addEventListener("resize", () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
 </script>
 
 </body>
