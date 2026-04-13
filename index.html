@@ -3,183 +3,339 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#eef" />
+    <meta name="theme-color" content="#020617" />
     <link rel="icon" href="favicon.svg" type="image/x-icon">
     <title>codebehind </title>
     <script src='codebehind.js' defer></script>
     <script>
-      CSS.registerProperty({
-        name: '--bg-color',
-        syntax: '<color>',
-        inherits: false,
-        initialValue: '#aaa'
-      });
+      try {
+        CSS.registerProperty({
+          name: '--bg-color',
+          syntax: '<color>',
+          inherits: false,
+          initialValue: '#020617'
+        });
+      } catch(e) {}
     </script>
     <style>
+      * { box-sizing: border-box; }
+
       body {
-        --bg-color: #aaa;
-        background: linear-gradient( var(--bg-color), #fff );
-        transition: --bg-color 8s ;
+        margin: 0;
+        --bg-color: #020617;
+        background: linear-gradient(var(--bg-color), #0a1628);
+        transition: --bg-color 8s;
+        overflow: hidden;
+        /* Trigger bg transition on touch via JS-added class instead of :hover */
       }
-      body:hover {
-        --bg-color: #045;
+      body.touched {
+        --bg-color: #020f2e;
       }
-      code-behind {
+
+      #container {
         display: flex;
-        flex: 1;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        color: #112;
-        font: bold calc(2rem + 4vw) 'Raleway';
-        text-shadow: #333 1px 0 10px;
-      }
-      span {
-        padding:4px;
-      }
-      #container {
-        display: flex;        
         height: 100vh;
+        gap: 0;
         cursor: default;
+        /* Prevent callout/highlight on long-press on mobile */
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
       }
+
+      #diamond-canvas {
+        /* Larger on portrait mobile, capped on desktop */
+        width: min(70vmin, 340px);
+        height: min(70vmin, 340px);
+        display: block;
+        flex-shrink: 0;
+        touch-action: none; /* prevent scroll-hijack on canvas */
+      }
+
+      code-behind {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        color: #7dd3fc;
+        font: bold calc(1.4rem + 3vw) 'Raleway', sans-serif;
+        text-shadow: #22d3ee 1px 0 14px;
+        margin-top: -0.5rem;
+      }
+
+      span {
+        padding: 4px;
+      }
+
       #C {
-        scale:300%;
-        color: #122;
+        scale: 300%;
+        color: #bae6fd;
         transform: translate(5px, -2px);
+        text-shadow: #38bdf8 1px 0 18px;
       }
-      #o{
+
+      #o {
         animation: 10s infinite alternate small-o,
                    15s infinite alternate small-d,
                    10s infinite alternate small-b;
       }
-      @keyframes small-o{
-        0%{
-          transform: translate(0px);
-        }
-        50%{
-          transform: translate(-6px);
-        }
+      @keyframes small-o {
+        0%  { transform: translate(0px); }
+        50% { transform: translate(-6px); }
       }
-      #d{  
-        transform: translate(0px, 1px);   
+
+      #d {
+        transform: translate(0px, 1px);
         animation: 14s infinite alternate small-d;
       }
       @keyframes small-d {
-        0%{
-          color: #222;
-        }
-        50%{
-          color: #225;
-        }
+        0%  { color: #7dd3fc; }
+        50% { color: #22d3ee; }
       }
+
       #b {
         animation: 7s infinite alternate small-b;
-        color: #222;
+        color: #7dd3fc;
         transform: translate(0px, 4px);
       }
       @keyframes small-b {
-        0%{          
-          scale: 100%;
-          transform: translate(0px, 2px);
-        }
-        50% {          
-          scale: 112%;
-          transform: translate(0px, 4px);
-        }
+        0%   { scale: 100%; transform: translate(0px, 2px); }
+        50%  { scale: 112%; transform: translate(0px, 4px); }
       }
-      #e{
-        transform: rotate(3deg);
-      }
-      #h{}
-      .fade-in{
+
+      #e { transform: rotate(3deg); }
+
+      .fade-in {
         display: block;
         animation: fade-in 3s ease-in forwards;
       }
       @keyframes fade-in {
-        0% {
-          opacity: 0.5;
-        }
-
-        100% {
-          opacity: 1;
-          display: block;
-        }
+        0%   { opacity: 0.5; }
+        100% { opacity: 1; }
       }
-      .fade-out{
+      .fade-out {
         display: block;
         animation: fade-out 3s ease-out forwards;
       }
       @keyframes fade-out {
-        0% {
-          opacity: 1;
-          display: block;
-        }
+        0%   { opacity: 1; }
+        100% { opacity: 0.5; }
+      }
 
-        100% {
-          opacity: 0.5;
-        }
+      /* #h needs a larger touch target on mobile */
+      #h {
+        position: relative;
+        cursor: pointer;
+        padding: 8px;
       }
-      #i{}
-      #dot{
+
+      #dot {
         transform: translate(-52px, -40px);
-        color: #555;
+        color: #38bdf8;
+        cursor: pointer;
+        padding: 8px; /* larger touch target */
       }
-      #dot:hover{
+      /* dot-rotate triggered by JS class instead of :hover */
+      #dot.spinning {
         animation: 1000s infinite alternate dot-rotate;
       }
       @keyframes dot-rotate {
-        from {          
-          transform: translate(-52px, -40px) rotate(0deg);
-        }
-        to {           
-          transform: translate(-52px, -42px) rotate(600000deg);
-        }
+        from { transform: translate(-52px, -40px) rotate(0deg); }
+        to   { transform: translate(-52px, -42px) rotate(600000deg); }
       }
-      #n{
-        transform: translate(-62px, 2px);
-      }
-      #end{
+
+      #n   { transform: translate(-62px, 2px); }
+
+      #end {
         transform: translate(-60px, 2px);
+        cursor: pointer;
+        padding: 8px; /* larger touch target */
       }
-      #end:hover{
+      /* end-d triggered by JS class instead of :hover */
+      #end.wobbling {
         animation: 4s alternate end-d;
       }
       @keyframes end-d {
-        0%{          
-          transform: translate(-60px, 2px) rotate(0deg);
-        }
-        50% {           
-          transform: translate(-65px, 0px) rotate(-20deg);
-        }
+        0%  { transform: translate(-60px, 2px) rotate(0deg); }
+        50% { transform: translate(-65px, 0px) rotate(-20deg); }
       }
     </style>
   </head>
   <body>
-<div id="container">
-<code-behind>
-  <span id="C">C</span> <span id="o">o</span> <span id="d">d</span> <span id="e">e</span> <span id="b">b</span> <span id="e">e</span> 
-  <span class='fade-out' id="h">h</span> <span id="i">ı</span> <span id="dot">✺</span> <span id="n">n</span> <span id="end">d</span>
-</code-behind>
-</div>
-<script>// <![CDATA[
-    (() =>{
+    <div id="container">
+
+      <canvas id="diamond-canvas"></canvas>
+
+      <code-behind>
+        <span id="C">C</span> <span id="o">o</span> <span id="d">d</span> <span id="e">e</span> <span id="b">b</span> <span id="e">e</span>
+        <span class='fade-out' id="h">h</span> <span id="i">ı</span> <span id="dot">✺</span> <span id="n">n</span> <span id="end">d</span>
+      </code-behind>
+
+    </div>
+
+    <script type="module">
+      import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+
+      const canvas = document.getElementById('diamond-canvas');
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+      renderer.setClearColor(0x000000, 0);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // cap at 2x for perf
+
+      function resizeRenderer() {
+        // Re-read clientWidth/Height after layout — avoids the 0x0 bug on mobile
+        const w = canvas.clientWidth  || canvas.offsetWidth  || 300;
+        const h = canvas.clientHeight || canvas.offsetHeight || 300;
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      }
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
+      camera.position.z = 3;
+
+      const geometry = new THREE.OctahedronGeometry(1);
+
+      const solidMaterial = new THREE.MeshStandardMaterial({
+        color: 0x0ea5e9,
+        roughness: 0.15,
+        metalness: 0.9
+      });
+      const diamond = new THREE.Mesh(geometry, solidMaterial);
+      scene.add(diamond);
+
+      const wireMaterial = new THREE.MeshBasicMaterial({
+        color: 0x22d3ee,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.9
+      });
+      const wireframe = new THREE.Mesh(geometry, wireMaterial);
+      wireframe.scale.setScalar(1.01);
+      scene.add(wireframe);
+
+      scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+      const light = new THREE.DirectionalLight(0xffffff, 1.2);
+      light.position.set(5, 5, 5);
+      scene.add(light);
+
+      // Touch-drag to spin the diamond
+      let isDragging = false;
+      let lastX = 0, lastY = 0;
+      let velX = 0.015, velY = 0.01; // default auto-spin velocity
+
+      canvas.addEventListener('touchstart', e => {
+        isDragging = true;
+        lastX = e.touches[0].clientX;
+        lastY = e.touches[0].clientY;
+        e.preventDefault();
+      }, { passive: false });
+
+      canvas.addEventListener('touchmove', e => {
+        if (!isDragging) return;
+        const dx = e.touches[0].clientX - lastX;
+        const dy = e.touches[0].clientY - lastY;
+        velX = dx * 0.005;
+        velY = dy * 0.005;
+        lastX = e.touches[0].clientX;
+        lastY = e.touches[0].clientY;
+        e.preventDefault();
+      }, { passive: false });
+
+      canvas.addEventListener('touchend', () => { isDragging = false; });
+
+      // Mouse drag too (bonus)
+      canvas.addEventListener('mousedown', e => { isDragging = true; lastX = e.clientX; lastY = e.clientY; });
+      canvas.addEventListener('mousemove', e => {
+        if (!isDragging) return;
+        velX = (e.clientX - lastX) * 0.005;
+        velY = (e.clientY - lastY) * 0.005;
+        lastX = e.clientX; lastY = e.clientY;
+      });
+      canvas.addEventListener('mouseup', () => { isDragging = false; });
+
+      function animate() {
+        // Gradually drift back to gentle auto-spin when not dragging
+        if (!isDragging) {
+          velX += (0.015 - velX) * 0.02;
+          velY += (0.010 - velY) * 0.02;
+        }
+        diamond.rotation.y += velX;
+        diamond.rotation.x += velY;
+        wireframe.rotation.copy(diamond.rotation);
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+      }
+
+      // Wait one frame for layout, then init size and start
+      requestAnimationFrame(() => {
+        resizeRenderer();
+        animate();
+      });
+
+      window.addEventListener('resize', resizeRenderer);
+      // Also handle orientation change on mobile
+      window.addEventListener('orientationchange', () => setTimeout(resizeRenderer, 200));
+    </script>
+
+    <script>
+      (() => {
+        // --- Background touch: toggle .touched on body ---
+        let touchTimer = null;
+        document.getElementById('container').addEventListener('touchstart', () => {
+          touchTimer = setTimeout(() => {
+            document.body.classList.toggle('touched');
+          }, 150);
+        });
+        document.getElementById('container').addEventListener('touchend', () => {
+          clearTimeout(touchTimer);
+        });
+        // Keep hover working on desktop
+        document.body.addEventListener('mouseenter', () => document.body.classList.add('touched'));
+        document.body.addEventListener('mouseleave', () => document.body.classList.remove('touched'));
+
+        // --- Title ticker ---
         let title = '♥︎✵☺︎☕︎♘⦿☆☽⚀⛵︎⚽︎☯︎';
-        let aceOfSpades = '🂡';
-        const titleRotateId  = setInterval(()=> {
+        const aceOfSpades = '🂡';
+        setInterval(() => {
           title = title.substring(1) + title[0];
-          document.title=aceOfSpades + title;
+          document.title = aceOfSpades + title;
         }, 500);
 
-        let h_elem = document.getElementById('h');
-        h_elem.addEventListener('click', () =>{
-          if(h_elem.classList[0]==="fade-in"){
-            h_elem.classList.remove('fade-in');
-            h_elem.classList.add('fade-out');
+        // --- #h: click/tap to toggle fade ---
+        const h_elem = document.getElementById('h');
+        function toggleH() {
+          if (h_elem.classList.contains('fade-in')) {
+            h_elem.classList.replace('fade-in', 'fade-out');
           } else {
-            h_elem.classList.remove('fade-out');
-            h_elem.classList.add('fade-in');
+            h_elem.classList.replace('fade-out', 'fade-in');
           }
-        });
+        }
+        h_elem.addEventListener('click', toggleH);
+        h_elem.addEventListener('touchend', e => { e.preventDefault(); toggleH(); });
+
+        // --- #dot: tap/click to toggle spin ---
+        const dot = document.getElementById('dot');
+        function toggleDot() {
+          dot.classList.toggle('spinning');
+        }
+        dot.addEventListener('click', toggleDot);
+        dot.addEventListener('touchend', e => { e.preventDefault(); toggleDot(); });
+
+        // --- #end: tap/click to trigger wobble ---
+        const end = document.getElementById('end');
+        function triggerEnd() {
+          end.classList.remove('wobbling');
+          // Force reflow so animation restarts
+          void end.offsetWidth;
+          end.classList.add('wobbling');
+        }
+        end.addEventListener('click', triggerEnd);
+        end.addEventListener('touchend', e => { e.preventDefault(); triggerEnd(); });
+        end.addEventListener('animationend', () => end.classList.remove('wobbling'));
       })();
-// ]]></script>
-</body>
+    </script>
+  </body>
 </html>
