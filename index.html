@@ -245,7 +245,7 @@
         height: 0.72em;
         transform: translate(-52px, -40px);
       }
-      #dot .quazar-core {
+      #dot .quasar-core {
         width: 56%;
         height: 56%;
         border-radius: 50%;
@@ -253,7 +253,7 @@
         box-shadow: 0 0 0.18em rgba(10, 10, 10, 0.95), 0 0 0.42em rgba(56, 189, 248, 0.18);
         z-index: 3;
       }
-      #dot .quazar-ring {
+      #dot .quasar-ring {
         position: absolute;
         width: 100%;
         height: 100%;
@@ -266,22 +266,22 @@
           rgba(56, 189, 248, 0.2) 360deg
         );
         filter: blur(0.4px);
-        animation: 26s linear infinite quazar-spin;
+        animation: 26s linear infinite quasar-spin;
         z-index: 1;
       }
-      #dot .quazar-star {
+      #dot .quasar-star {
         position: absolute;
         width: 0.11em;
         height: 0.11em;
         border-radius: 50%;
         background: #dff4ff;
         box-shadow: 0 0 0.09em #dff4ff;
-        animation: 3.4s ease-in-out infinite alternate quazar-twinkle;
+        animation: 3.4s ease-in-out infinite alternate quasar-twinkle;
         z-index: 2;
       }
-      #dot .quazar-star.s1 { top: 8%; left: 17%; }
-      #dot .quazar-star.s2 { top: 23%; right: 5%; animation-duration: 4.2s; }
-      #dot .quazar-star.s3 { bottom: 8%; left: 26%; animation-duration: 2.8s; }
+      #dot .quasar-star.s1 { top: 8%; left: 17%; }
+      #dot .quasar-star.s2 { top: 23%; right: 5%; animation-duration: 4.2s; }
+      #dot .quasar-star.s3 { bottom: 8%; left: 26%; animation-duration: 2.8s; }
       #dot .spaceman {
         position: absolute;
         left: -0.48em;
@@ -292,11 +292,11 @@
         animation: 9s ease-in-out infinite spaceman-sink;
         z-index: 4;
       }
-      @keyframes quazar-spin {
+      @keyframes quasar-spin {
         from { transform: rotate(0deg); }
         to   { transform: rotate(360deg); }
       }
-      @keyframes quazar-twinkle {
+      @keyframes quasar-twinkle {
         0%   { opacity: 0.35; transform: scale(0.75); }
         100% { opacity: 1; transform: scale(1.1); }
       }
@@ -400,7 +400,7 @@
 
       <code-behind aria-label="Codebehind">
         <span class="saturn-orbit"><span id="C">C</span> <span id="o">o</span></span> <span id="d">d</span> <span id="e">e</span> <span id="b">b</span> <span id="e">e</span>
-        <span class='fade-out' id="h">h</span> <span id="i">ı</span> <span id="dot"><span class="quazar-ring"></span><span class="quazar-core"></span><span class="quazar-star s1"></span><span class="quazar-star s2"></span><span class="quazar-star s3"></span><span class="spaceman">🧑‍🚀</span></span> <span id="n">n</span> <span id="end">d</span>
+        <span class='fade-out' id="h">h</span> <span id="i">ı</span> <span id="dot"><span class="quasar-ring"></span><span class="quasar-core"></span><span class="quasar-star s1"></span><span class="quasar-star s2"></span><span class="quasar-star s3"></span><span class="spaceman">🧑‍🚀</span></span> <span id="n">n</span> <span id="end">d</span>
       </code-behind>
 
     </div>
