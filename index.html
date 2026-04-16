@@ -123,15 +123,58 @@
         text-shadow: #38bdf8 1px 0 18px;
       }
 
-      #o {
-        transform: translate(-18px, -10px);
-        animation: 10s infinite alternate small-o,
-                   15s infinite alternate small-d,
-                   10s infinite alternate small-b;
+      .saturn-orbit {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding-right: 0.45em;
       }
-      @keyframes small-o {
-        0%  { transform: translate(-18px, -10px); }
-        50% { transform: translate(-24px, -10px); }
+
+      #o {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 1.05em;
+        height: 1.05em;
+        transform: translate(-50%, -50%) rotate(0deg) translateX(28px) rotate(0deg);
+        animation: 6.5s linear infinite orbit-c;
+        color: transparent;
+        pointer-events: none;
+      }
+      #o::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0.52em;
+        height: 0.52em;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #d9f2ff 0%, #7dd3fc 55%, #0ea5e9 100%);
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 10px #38bdf8;
+      }
+      #o::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0.95em;
+        height: 0.38em;
+        border: 2px solid rgba(186, 230, 253, 0.9);
+        border-radius: 50%;
+        transform: translate(-50%, -50%) rotate(-22deg);
+        box-shadow: 0 0 8px rgba(34, 211, 238, 0.7);
+      }
+      @keyframes orbit-c {
+        from { transform: translate(-50%, -50%) rotate(0deg) translateX(28px) rotate(0deg); }
+        to   { transform: translate(-50%, -50%) rotate(360deg) translateX(28px) rotate(-360deg); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #o {
+          animation: none;
+          transform: translate(-50%, -50%) translateX(28px);
+        }
       }
 
       #d {
@@ -300,8 +343,8 @@
 
       <canvas id="diamond-canvas"></canvas>
 
-      <code-behind>
-        <span id="C">C</span> <span id="o">o</span> <span id="d">d</span> <span id="e">e</span> <span id="b">b</span> <span id="e">e</span>
+      <code-behind aria-label="Codebehind">
+        <span class="saturn-orbit"><span id="C">C</span> <span id="o">o</span></span> <span id="d">d</span> <span id="e">e</span> <span id="b">b</span> <span id="e">e</span>
         <span class='fade-out' id="h">h</span> <span id="i">ı</span> <span id="dot">✺</span> <span id="n">n</span> <span id="end">d</span>
       </code-behind>
 
