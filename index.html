@@ -335,7 +335,10 @@
         wireframe.rotation.copy(diamond.rotation);
 
         // h-brightness: ramp scene lighting up then back down over ~10 s
+        // Timing in milliseconds: rise=400 ms, hold=8 s, fade=2 s
         const H_RISE = 400, H_HOLD = 8000, H_FADE = 2000;
+        // window._hPressTime is set by the non-module event-handler script below;
+        // window is the only shared scope between a <script type="module"> and a plain <script>.
         const hElapsed = window._hPressTime ? Date.now() - window._hPressTime : Infinity;
         let hBrightness = 0;
         if (hElapsed < H_RISE) {
@@ -390,20 +393,21 @@
         // --- #h: click/tap to toggle fade and trigger brightness flash ---
         const h_elem = document.getElementById('h');
 
-        // Bright flash: quick rise (0.4 s), hold (~8 s), slow fade (2 s) ≈ 10 s total
+        // Bright flash: quick rise (0.4 s = H_RISE/1000), hold (~8 s = H_HOLD/1000),
+        // slow fade (2 s = H_FADE/1000) ≈ 10 s total.
+        // The duration strings below must stay in sync with H_RISE / H_FADE in the
+        // module script above (cross-script constants can't be shared directly).
         let _hBrightTimer = null;
         function triggerBright() {
           if (_hBrightTimer) { clearTimeout(_hBrightTimer); _hBrightTimer = null; }
-          // Fast transition in
-          h_elem.style.transition = 'color 0.4s ease-in, text-shadow 0.4s ease-in';
+          h_elem.style.transition = 'color 0.4s ease-in, text-shadow 0.4s ease-in';   // H_RISE
           h_elem.classList.add('bright');
           window._hPressTime = Date.now();
-          // After 8 s start slow fade out
           _hBrightTimer = setTimeout(() => {
-            h_elem.style.transition = 'color 2s ease-out, text-shadow 2s ease-out';
+            h_elem.style.transition = 'color 2s ease-out, text-shadow 2s ease-out';   // H_FADE
             h_elem.classList.remove('bright');
             _hBrightTimer = null;
-          }, 8000);
+          }, 8000); // H_HOLD
         }
 
         function toggleH() {
