@@ -211,15 +211,11 @@
       const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
       camera.position.z = 3;
 
-      const geometry = new THREE.OctahedronGeometry(1);
-
       const solidMaterial = new THREE.MeshStandardMaterial({
         color: 0x0ea5e9,
         roughness: 0.15,
         metalness: 0.9
       });
-      const diamond = new THREE.Mesh(geometry, solidMaterial);
-      scene.add(diamond);
 
       const wireMaterial = new THREE.MeshBasicMaterial({
         color: 0x22d3ee,
@@ -227,7 +223,59 @@
         transparent: true,
         opacity: 0.9
       });
-      const wireframe = new THREE.Mesh(geometry, wireMaterial);
+
+      // Build an Elite-inspired "Raptor Mk I" spaceship from Three.js primitives.
+      // The design echoes the angular, flat-shaded polygon aesthetic of classic Elite
+      // ships (Cobra, Asp, Sidewinder) — elongated hull, swept wings, twin engine pods.
+      function buildShip(mat) {
+        const group = new THREE.Group();
+
+        // Main hull: flat octahedron stretched along Z — produces an angular
+        // arrowhead/diamond silhouette from above (8 flat triangular faces).
+        const hullGeo = new THREE.OctahedronGeometry(0.72);
+        hullGeo.applyMatrix4(new THREE.Matrix4().makeScale(1.0, 0.28, 1.9));
+        group.add(new THREE.Mesh(hullGeo, mat));
+
+        // Cockpit: low-poly dome (4 longitudinal segments → faceted pyramid shape)
+        // positioned forward-top of the hull.
+        const cockpitGeo = new THREE.SphereGeometry(0.18, 4, 2, 0, Math.PI * 2, 0, Math.PI / 2);
+        const cockpit = new THREE.Mesh(cockpitGeo, mat);
+        cockpit.position.set(0, 0.18, -0.48);
+        group.add(cockpit);
+
+        // Swept wings: thin boxes angled 14° back from the mid-fuselage.
+        const portWingGeo = new THREE.BoxGeometry(0.85, 0.06, 0.75);
+        const portWing = new THREE.Mesh(portWingGeo, mat);
+        portWing.position.set(-0.72, 0, 0.1);
+        portWing.rotation.y = 0.25;
+        group.add(portWing);
+
+        const stbdWingGeo = new THREE.BoxGeometry(0.85, 0.06, 0.75);
+        const stbdWing = new THREE.Mesh(stbdWingGeo, mat);
+        stbdWing.position.set(0.72, 0, 0.1);
+        stbdWing.rotation.y = -0.25;
+        group.add(stbdWing);
+
+        // Twin engine nacelles: hexagonal cylinders at the rear flanks.
+        const portPodGeo = new THREE.CylinderGeometry(0.09, 0.14, 0.55, 6);
+        portPodGeo.applyMatrix4(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+        const portPod = new THREE.Mesh(portPodGeo, mat);
+        portPod.position.set(-0.58, 0, 0.72);
+        group.add(portPod);
+
+        const stbdPodGeo = new THREE.CylinderGeometry(0.09, 0.14, 0.55, 6);
+        stbdPodGeo.applyMatrix4(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+        const stbdPod = new THREE.Mesh(stbdPodGeo, mat);
+        stbdPod.position.set(0.58, 0, 0.72);
+        group.add(stbdPod);
+
+        return group;
+      }
+
+      const diamond = buildShip(solidMaterial);
+      scene.add(diamond);
+
+      const wireframe = buildShip(wireMaterial);
       wireframe.scale.setScalar(1.01);
       scene.add(wireframe);
 
