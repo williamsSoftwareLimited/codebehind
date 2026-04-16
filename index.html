@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#020617" />
     <link rel="icon" href="favicon.svg" type="image/x-icon">
+    <link rel="stylesheet" href="chatbot.css">
     <title>codebehind </title>
     <script src='codebehind.js' defer></script>
+    <script src='chatbot.js' defer></script>
     <script>
       try {
         CSS.registerProperty({
@@ -290,6 +292,7 @@
         0%  { transform: translate(-60px, 2px) rotate(0deg); }
         50% { transform: translate(-65px, 0px) rotate(-20deg); }
       }
+
     </style>
   </head>
   <body>
@@ -364,6 +367,24 @@
         <span class='fade-out' id="h">h</span> <span id="i">ı</span> <span id="dot" role="img" aria-label="quasar black hole"><span class="quasar-ring"></span><span class="quasar-core"></span></span> <span id="n">n</span> <span id="end">d</span>
       </code-behind>
 
+    </div>
+
+    <button id="pacman-trigger" type="button" aria-label="Open chat console"></button>
+
+    <div id="chat-modal" role="dialog" aria-modal="true" aria-labelledby="chat-title">
+      <div id="chat-window">
+        <div id="chat-header">
+          <span id="chat-title">WOPR: JOSHUA TERMINAL</span>
+          <button id="chat-close" type="button" aria-label="Close chat">X</button>
+        </div>
+        <ul id="chat-log" aria-live="polite">
+          <li>&gt; GREETINGS PROFESSOR FALKEN. SHALL WE PLAY A GAME?</li>
+        </ul>
+        <form id="chat-form">
+          <input id="chat-input" type="text" autocomplete="off" placeholder="TYPE COMMAND..." aria-label="Chat command input" />
+          <button id="chat-send" type="submit">SEND</button>
+        </form>
+      </div>
     </div>
 
     <script type="module">
@@ -606,6 +627,7 @@
         end.addEventListener('click', triggerEnd);
         end.addEventListener('touchend', e => { e.preventDefault(); triggerEnd(); });
         end.addEventListener('animationend', () => end.classList.remove('wobbling'));
+
       })();
     </script>
   </body>
