@@ -130,6 +130,20 @@
         position: relative;
         cursor: pointer;
         padding: 8px;
+        /* Explicit base values so CSS transitions have a start point */
+        color: #7dd3fc;
+        text-shadow: #22d3ee 1px 0 14px;
+      }
+
+      /* Bright-flash state: intense white/cyan glow */
+      #h.bright {
+        color: #ffffff;
+        text-shadow:
+          0 0 10px #ffffff,
+          0 0 30px #ffffff,
+          0 0 60px #bae6fd,
+          0 0 100px #7dd3fc,
+          0 0 160px #22d3ee;
       }
 
       #dot {
@@ -197,15 +211,11 @@
       const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 100);
       camera.position.z = 3;
 
-      const geometry = new THREE.OctahedronGeometry(1);
-
       const solidMaterial = new THREE.MeshStandardMaterial({
         color: 0x0ea5e9,
         roughness: 0.15,
         metalness: 0.9
       });
-      const diamond = new THREE.Mesh(geometry, solidMaterial);
-      scene.add(diamond);
 
       const wireMaterial = new THREE.MeshBasicMaterial({
         color: 0x22d3ee,
@@ -213,14 +223,71 @@
         transparent: true,
         opacity: 0.9
       });
-      const wireframe = new THREE.Mesh(geometry, wireMaterial);
+
+      // Build an Elite-inspired "Raptor Mk I" spaceship from Three.js primitives.
+      // The design echoes the angular, flat-shaded polygon aesthetic of classic Elite
+      // ships (Cobra, Asp, Sidewinder) — elongated hull, swept wings, twin engine pods.
+      function buildShip(mat) {
+        const group = new THREE.Group();
+
+        // Main hull: flat octahedron stretched along Z — produces an angular
+        // arrowhead/diamond silhouette from above (8 flat triangular faces).
+        const hullGeo = new THREE.OctahedronGeometry(0.72);
+        hullGeo.applyMatrix4(new THREE.Matrix4().makeScale(1.0, 0.28, 1.9));
+        group.add(new THREE.Mesh(hullGeo, mat));
+
+        // Cockpit: low-poly dome (4 longitudinal segments → faceted pyramid shape)
+        // positioned forward-top of the hull.
+        const cockpitGeo = new THREE.SphereGeometry(0.18, 4, 2, 0, Math.PI * 2, 0, Math.PI / 2);
+        const cockpit = new THREE.Mesh(cockpitGeo, mat);
+        cockpit.position.set(0, 0.18, -0.48);
+        group.add(cockpit);
+
+        // Swept wings: thin boxes angled 14° back from the mid-fuselage.
+        const portWingGeo = new THREE.BoxGeometry(0.85, 0.06, 0.75);
+        const portWing = new THREE.Mesh(portWingGeo, mat);
+        portWing.position.set(-0.72, 0, 0.1);
+        portWing.rotation.y = 0.25;
+        group.add(portWing);
+
+        const stbdWingGeo = new THREE.BoxGeometry(0.85, 0.06, 0.75);
+        const stbdWing = new THREE.Mesh(stbdWingGeo, mat);
+        stbdWing.position.set(0.72, 0, 0.1);
+        stbdWing.rotation.y = -0.25;
+        group.add(stbdWing);
+
+        // Twin engine nacelles: hexagonal cylinders at the rear flanks.
+        const portPodGeo = new THREE.CylinderGeometry(0.09, 0.14, 0.55, 6);
+        portPodGeo.applyMatrix4(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+        const portPod = new THREE.Mesh(portPodGeo, mat);
+        portPod.position.set(-0.58, 0, 0.72);
+        group.add(portPod);
+
+        const stbdPodGeo = new THREE.CylinderGeometry(0.09, 0.14, 0.55, 6);
+        stbdPodGeo.applyMatrix4(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+        const stbdPod = new THREE.Mesh(stbdPodGeo, mat);
+        stbdPod.position.set(0.58, 0, 0.72);
+        group.add(stbdPod);
+
+        return group;
+      }
+
+      const diamond = buildShip(solidMaterial);
+      scene.add(diamond);
+
+      const wireframe = buildShip(wireMaterial);
       wireframe.scale.setScalar(1.01);
       scene.add(wireframe);
 
-      scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+      const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+      scene.add(ambient);
       const light = new THREE.DirectionalLight(0xffffff, 1.2);
       light.position.set(5, 5, 5);
       scene.add(light);
+
+      // Store base intensities for the h-brightness effect
+      const ambientBaseIntensity = 0.4;
+      const lightBaseIntensity   = 1.2;
 
       // Touch-drag to spin the diamond
       let isDragging = false;
@@ -266,6 +333,24 @@
         diamond.rotation.y += velX;
         diamond.rotation.x += velY;
         wireframe.rotation.copy(diamond.rotation);
+
+        // h-brightness: ramp scene lighting up then back down over ~10 s
+        // Timing in milliseconds: rise=400 ms, hold=8 s, fade=2 s
+        const H_RISE = 400, H_HOLD = 8000, H_FADE = 2000;
+        // window._hPressTime is set by the non-module event-handler script below;
+        // window is the only shared scope between a <script type="module"> and a plain <script>.
+        const hElapsed = window._hPressTime ? Date.now() - window._hPressTime : Infinity;
+        let hBrightness = 0;
+        if (hElapsed < H_RISE) {
+          hBrightness = hElapsed / H_RISE;
+        } else if (hElapsed < H_HOLD) {
+          hBrightness = 1;
+        } else if (hElapsed < H_HOLD + H_FADE) {
+          hBrightness = 1 - (hElapsed - H_HOLD) / H_FADE;
+        }
+        light.intensity   = lightBaseIntensity   + hBrightness * 10;
+        ambient.intensity = ambientBaseIntensity  + hBrightness * 3;
+
         renderer.render(scene, camera);
         requestAnimationFrame(animate);
       }
@@ -305,9 +390,28 @@
           document.title = aceOfSpades + title;
         }, 500);
 
-        // --- #h: click/tap to toggle fade ---
+        // --- #h: click/tap to toggle fade and trigger brightness flash ---
         const h_elem = document.getElementById('h');
+
+        // Bright flash: quick rise (0.4 s = H_RISE/1000), hold (~8 s = H_HOLD/1000),
+        // slow fade (2 s = H_FADE/1000) ≈ 10 s total.
+        // The duration strings below must stay in sync with H_RISE / H_FADE in the
+        // module script above (cross-script constants can't be shared directly).
+        let _hBrightTimer = null;
+        function triggerBright() {
+          if (_hBrightTimer) { clearTimeout(_hBrightTimer); _hBrightTimer = null; }
+          h_elem.style.transition = 'color 0.4s ease-in, text-shadow 0.4s ease-in';   // H_RISE
+          h_elem.classList.add('bright');
+          window._hPressTime = Date.now();
+          _hBrightTimer = setTimeout(() => {
+            h_elem.style.transition = 'color 2s ease-out, text-shadow 2s ease-out';   // H_FADE
+            h_elem.classList.remove('bright');
+            _hBrightTimer = null;
+          }, 8000); // H_HOLD
+        }
+
         function toggleH() {
+          triggerBright();
           if (h_elem.classList.contains('fade-in')) {
             h_elem.classList.replace('fade-in', 'fade-out');
           } else {
