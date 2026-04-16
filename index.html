@@ -431,6 +431,12 @@
         roughness: 0.15,
         metalness: 0.9
       });
+      const solidRingMaterial = new THREE.MeshStandardMaterial({
+        color: 0x7dd3fc,
+        roughness: 0.35,
+        metalness: 0.25,
+        side: THREE.DoubleSide
+      });
 
       const wireMaterial = new THREE.MeshBasicMaterial({
         color: 0x22d3ee,
@@ -438,69 +444,37 @@
         transparent: true,
         opacity: 0.9
       });
+      const wireRingMaterial = new THREE.MeshBasicMaterial({
+        color: 0x22d3ee,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.9,
+        side: THREE.DoubleSide
+      });
 
-      // Build an Elite-inspired "Raptor Mk I" spaceship from Three.js primitives.
-      // The design echoes the angular, flat-shaded polygon aesthetic of classic Elite
-      // ships (Cobra, Asp, Sidewinder) — elongated hull, swept wings, twin engine pods.
-      function buildShip(mat) {
+      function buildSaturn(planetMat, ringMat) {
         const group = new THREE.Group();
 
-        // Main hull: flat octahedron stretched along Z — produces an angular
-        // arrowhead/diamond silhouette from above (8 flat triangular faces).
-        const hullGeo = new THREE.OctahedronGeometry(0.72);
-        hullGeo.applyMatrix4(new THREE.Matrix4().makeScale(1.0, 0.28, 1.9));
-        group.add(new THREE.Mesh(hullGeo, mat));
+        const planetGeo = new THREE.SphereGeometry(0.62, 32, 32);
+        const planet = new THREE.Mesh(planetGeo, planetMat);
+        group.add(planet);
 
-        // Swept wings: thin boxes angled 14° back from the mid-fuselage.
-        const portWingGeo = new THREE.BoxGeometry(0.85, 0.06, 0.75);
-        const portWing = new THREE.Mesh(portWingGeo, mat);
-        portWing.position.set(-0.72, 0, 0.1);
-        portWing.rotation.y = 0.25;
-        group.add(portWing);
+        const ringGeo = new THREE.RingGeometry(0.86, 1.33, 72);
+        const ring = new THREE.Mesh(ringGeo, ringMat);
+        ring.rotation.x = Math.PI / 2.35;
+        group.add(ring);
 
-        const stbdWingGeo = new THREE.BoxGeometry(0.85, 0.06, 0.75);
-        const stbdWing = new THREE.Mesh(stbdWingGeo, mat);
-        stbdWing.position.set(0.72, 0, 0.1);
-        stbdWing.rotation.y = -0.25;
-        group.add(stbdWing);
-
-        // Wing-mounted lasers.
-        const portLaserGeo = new THREE.CylinderGeometry(0.025, 0.025, 0.55, 6);
-        portLaserGeo.applyMatrix4(new THREE.Matrix4().makeRotationX(Math.PI / 2));
-        const portLaser = new THREE.Mesh(portLaserGeo, mat);
-        portLaser.position.set(-1.12, 0.01, -0.2);
-        portLaser.rotation.y = 0.25;
-        group.add(portLaser);
-
-        const stbdLaserGeo = new THREE.CylinderGeometry(0.025, 0.025, 0.55, 6);
-        stbdLaserGeo.applyMatrix4(new THREE.Matrix4().makeRotationX(Math.PI / 2));
-        const stbdLaser = new THREE.Mesh(stbdLaserGeo, mat);
-        stbdLaser.position.set(1.12, 0.01, -0.2);
-        stbdLaser.rotation.y = -0.25;
-        group.add(stbdLaser);
-
-        // Twin engine nacelles: hexagonal cylinders at the rear flanks.
-        const portPodGeo = new THREE.CylinderGeometry(0.09, 0.14, 0.55, 6);
-        portPodGeo.applyMatrix4(new THREE.Matrix4().makeRotationX(Math.PI / 2));
-        const portPod = new THREE.Mesh(portPodGeo, mat);
-        portPod.position.set(-0.58, 0, 0.72);
-        group.add(portPod);
-
-        const stbdPodGeo = new THREE.CylinderGeometry(0.09, 0.14, 0.55, 6);
-        stbdPodGeo.applyMatrix4(new THREE.Matrix4().makeRotationX(Math.PI / 2));
-        const stbdPod = new THREE.Mesh(stbdPodGeo, mat);
-        stbdPod.position.set(0.58, 0, 0.72);
-        group.add(stbdPod);
+        group.rotation.z = -0.45;
 
         return group;
       }
 
-      const diamond = buildShip(solidMaterial);
-      scene.add(diamond);
+      const saturn = buildSaturn(solidMaterial, solidRingMaterial);
+      scene.add(saturn);
 
-      const wireframe = buildShip(wireMaterial);
-      wireframe.scale.setScalar(1.01);
-      scene.add(wireframe);
+      const saturnWireframe = buildSaturn(wireMaterial, wireRingMaterial);
+      saturnWireframe.scale.setScalar(1.01);
+      scene.add(saturnWireframe);
 
       const ambient = new THREE.AmbientLight(0xffffff, 0.4);
       scene.add(ambient);
@@ -512,7 +486,7 @@
       const ambientBaseIntensity = 0.4;
       const lightBaseIntensity   = 1.2;
 
-      // Touch-drag to spin the diamond
+      // Touch-drag to spin Saturn
       let isDragging = false;
       let lastX = 0, lastY = 0;
       let velX = 0.015, velY = 0.01; // default auto-spin velocity
@@ -553,9 +527,9 @@
           velX += (0.015 - velX) * 0.02;
           velY += (0.010 - velY) * 0.02;
         }
-        diamond.rotation.y += velX;
-        diamond.rotation.x += velY;
-        wireframe.rotation.copy(diamond.rotation);
+        saturn.rotation.y += velX;
+        saturn.rotation.x += velY;
+        saturnWireframe.rotation.copy(saturn.rotation);
 
         // h-brightness: ramp scene lighting up then back down over ~10 s
         // Timing in milliseconds: rise=400 ms, hold=8 s, fade=2 s
