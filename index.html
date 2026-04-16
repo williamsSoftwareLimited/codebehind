@@ -290,6 +290,121 @@
         0%  { transform: translate(-60px, 2px) rotate(0deg); }
         50% { transform: translate(-65px, 0px) rotate(-20deg); }
       }
+
+      #pacman-trigger {
+        position: fixed;
+        right: 18px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 50px;
+        height: 50px;
+        border: 0;
+        padding: 0;
+        border-radius: 50%;
+        background: #facc15;
+        cursor: pointer;
+        z-index: 6;
+        box-shadow: 0 0 14px rgba(250, 204, 21, 0.7);
+      }
+      #pacman-trigger::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: #020617;
+        clip-path: polygon(100% 50%, 58% 18%, 58% 82%);
+      }
+      #pacman-trigger::after {
+        content: '';
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        top: 13px;
+        left: 28px;
+        background: #111827;
+      }
+      #pacman-trigger:hover::before,
+      #pacman-trigger:focus-visible::before {
+        animation: pacman-chomp 0.24s steps(1, end) infinite;
+      }
+      @keyframes pacman-chomp {
+        0%, 100% { clip-path: polygon(100% 50%, 58% 18%, 58% 82%); }
+        50% { clip-path: polygon(100% 50%, 70% 44%, 70% 56%); }
+      }
+
+      #chat-modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 7;
+      }
+      #chat-modal.open {
+        display: flex;
+      }
+      #chat-window {
+        width: min(92vw, 620px);
+        height: min(82vh, 460px);
+        background: #050705;
+        border: 2px solid #3aff7a;
+        box-shadow: 0 0 28px rgba(58, 255, 122, 0.28);
+        color: #6dff99;
+        font-family: "Courier New", Courier, monospace;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+      }
+      #chat-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #2ad060;
+        padding: 10px 12px;
+        letter-spacing: 0.06em;
+      }
+      #chat-close {
+        border: 1px solid #2ad060;
+        background: transparent;
+        color: #6dff99;
+        cursor: pointer;
+        width: 28px;
+        height: 28px;
+      }
+      #chat-log {
+        margin: 0;
+        list-style: none;
+        padding: 12px;
+        overflow: auto;
+      }
+      #chat-log li {
+        margin-bottom: 8px;
+        line-height: 1.35;
+        word-break: break-word;
+      }
+      #chat-form {
+        display: flex;
+        gap: 8px;
+        border-top: 1px solid #2ad060;
+        padding: 10px;
+      }
+      #chat-input {
+        flex: 1;
+        min-width: 0;
+        background: #010201;
+        border: 1px solid #2ad060;
+        color: #6dff99;
+        padding: 8px;
+        font: inherit;
+      }
+      #chat-send {
+        border: 1px solid #2ad060;
+        background: transparent;
+        color: #6dff99;
+        padding: 0 12px;
+        cursor: pointer;
+        font: inherit;
+      }
     </style>
   </head>
   <body>
@@ -364,6 +479,24 @@
         <span class='fade-out' id="h">h</span> <span id="i">ı</span> <span id="dot" role="img" aria-label="quasar black hole"><span class="quasar-ring"></span><span class="quasar-core"></span></span> <span id="n">n</span> <span id="end">d</span>
       </code-behind>
 
+    </div>
+
+    <button id="pacman-trigger" type="button" aria-label="Open chat console"></button>
+
+    <div id="chat-modal" role="dialog" aria-modal="true" aria-labelledby="chat-title">
+      <div id="chat-window">
+        <div id="chat-header">
+          <span id="chat-title">WOPR / JOSHUA TERMINAL</span>
+          <button id="chat-close" type="button" aria-label="Close chat">X</button>
+        </div>
+        <ul id="chat-log" aria-live="polite">
+          <li>&gt; GREETINGS PROFESSOR FALKEN. SHALL WE PLAY A GAME?</li>
+        </ul>
+        <form id="chat-form">
+          <input id="chat-input" type="text" autocomplete="off" placeholder="TYPE COMMAND..." />
+          <button id="chat-send" type="submit">SEND</button>
+        </form>
+      </div>
     </div>
 
     <script type="module">
@@ -606,6 +739,54 @@
         end.addEventListener('click', triggerEnd);
         end.addEventListener('touchend', e => { e.preventDefault(); triggerEnd(); });
         end.addEventListener('animationend', () => end.classList.remove('wobbling'));
+
+        // --- Pac-Man chatbot modal ---
+        const pacmanTrigger = document.getElementById('pacman-trigger');
+        const chatModal = document.getElementById('chat-modal');
+        const chatClose = document.getElementById('chat-close');
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatLog = document.getElementById('chat-log');
+
+        const botReply = (text) => {
+          const content = text.toLowerCase();
+          if (content.includes('hello') || content.includes('hi')) return 'HELLO HUMAN. SYSTEM STATUS: ONLINE.';
+          if (content.includes('help')) return 'AVAILABLE COMMANDS: HELLO, HELP, GAME, STATUS.';
+          if (content.includes('game')) return 'A STRANGE GAME. THE ONLY WINNING MOVE IS NOT TO PLAY.';
+          if (content.includes('status')) return 'ALL SYSTEMS NOMINAL. DEFCON LEVEL: GREEN.';
+          return 'INPUT RECEIVED. PROCESSING COMPLETE.';
+        };
+
+        const appendLine = (prefix, text) => {
+          const item = document.createElement('li');
+          item.textContent = `> ${prefix}: ${text}`;
+          chatLog.appendChild(item);
+          chatLog.scrollTop = chatLog.scrollHeight;
+        };
+
+        const openChat = () => {
+          chatModal.classList.add('open');
+          requestAnimationFrame(() => chatInput.focus());
+        };
+        const closeChat = () => chatModal.classList.remove('open');
+
+        pacmanTrigger.addEventListener('click', openChat);
+        chatClose.addEventListener('click', closeChat);
+        chatModal.addEventListener('click', e => {
+          if (e.target === chatModal) closeChat();
+        });
+        document.addEventListener('keydown', e => {
+          if (e.key === 'Escape' && chatModal.classList.contains('open')) closeChat();
+        });
+
+        chatForm.addEventListener('submit', e => {
+          e.preventDefault();
+          const input = chatInput.value.trim();
+          if (!input) return;
+          appendLine('YOU', input);
+          chatInput.value = '';
+          setTimeout(() => appendLine('JOSHUA', botReply(input)), 240);
+        });
       })();
     </script>
   </body>
