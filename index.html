@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#020617" />
     <link rel="icon" href="favicon.svg" type="image/x-icon">
+    <link rel="stylesheet" href="chatbot.css">
     <title>codebehind </title>
     <script src='codebehind.js' defer></script>
+    <script src='chatbot.js' defer></script>
     <script>
       try {
         CSS.registerProperty({
@@ -291,131 +293,6 @@
         50% { transform: translate(-65px, 0px) rotate(-20deg); }
       }
 
-      #pacman-trigger {
-        position: fixed;
-        right: 18px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 50px;
-        height: 50px;
-        border: 0;
-        padding: 0;
-        border-radius: 50%;
-        background: #facc15;
-        cursor: pointer;
-        z-index: 6;
-        box-shadow: 0 0 14px rgba(250, 204, 21, 0.7);
-      }
-      #pacman-trigger::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: #020617;
-        clip-path: polygon(100% 50%, 58% 18%, 58% 82%);
-      }
-      #pacman-trigger::after {
-        content: '';
-        position: absolute;
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        top: 13px;
-        left: 28px;
-        background: #111827;
-      }
-      #pacman-trigger:hover::before,
-      #pacman-trigger:focus-visible::before {
-        animation: pacman-chomp 0.24s steps(1, end) infinite;
-      }
-      #pacman-trigger:focus-visible {
-        outline: 2px solid #ffffff;
-        outline-offset: 3px;
-      }
-      @keyframes pacman-chomp {
-        0%, 100% { clip-path: polygon(100% 50%, 58% 18%, 58% 82%); }
-        50% { clip-path: polygon(100% 50%, 70% 44%, 70% 56%); }
-      }
-
-      #chat-modal {
-        position: fixed;
-        inset: 0;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        background: rgba(0, 0, 0, 0.6);
-        z-index: 7;
-      }
-      #chat-modal.open {
-        display: flex;
-      }
-      #chat-window {
-        width: min(92vw, 620px);
-        height: min(82vh, 460px);
-        background: #050705;
-        border: 2px solid #3aff7a;
-        box-shadow: 0 0 28px rgba(58, 255, 122, 0.28);
-        color: #6dff99;
-        font-family: "Courier New", Courier, monospace;
-        display: grid;
-        grid-template-rows: auto 1fr auto;
-      }
-      #chat-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        border-bottom: 1px solid #2ad060;
-        padding: 10px 12px;
-        letter-spacing: 0.06em;
-      }
-      #chat-close {
-        border: 1px solid #2ad060;
-        background: transparent;
-        color: #6dff99;
-        cursor: pointer;
-        width: 28px;
-        height: 28px;
-      }
-      #chat-log {
-        margin: 0;
-        list-style: none;
-        padding: 12px;
-        overflow: auto;
-      }
-      #chat-log li {
-        margin-bottom: 8px;
-        line-height: 1.35;
-        word-break: break-word;
-      }
-      #chat-form {
-        display: flex;
-        gap: 8px;
-        border-top: 1px solid #2ad060;
-        padding: 10px;
-      }
-      #chat-input {
-        flex: 1;
-        min-width: 0;
-        background: #010201;
-        border: 1px solid #2ad060;
-        color: #6dff99;
-        padding: 8px;
-        font: inherit;
-      }
-      #chat-send {
-        border: 1px solid #2ad060;
-        background: transparent;
-        color: #6dff99;
-        padding: 0 12px;
-        cursor: pointer;
-        font: inherit;
-      }
-      @media (max-width: 640px), (max-height: 560px) {
-        #pacman-trigger {
-          top: auto;
-          bottom: 18px;
-          transform: none;
-        }
-      }
     </style>
   </head>
   <body>
@@ -751,82 +628,6 @@
         end.addEventListener('touchend', e => { e.preventDefault(); triggerEnd(); });
         end.addEventListener('animationend', () => end.classList.remove('wobbling'));
 
-        // --- Pac-Man chatbot modal ---
-        const pacmanTrigger = document.getElementById('pacman-trigger');
-        const chatModal = document.getElementById('chat-modal');
-        const chatClose = document.getElementById('chat-close');
-        const chatForm = document.getElementById('chat-form');
-        const chatInput = document.getElementById('chat-input');
-        const chatLog = document.getElementById('chat-log');
-        const FOCUSABLE_SELECTOR = 'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
-        let chatReturnFocusEl = null;
-
-        const botReply = (text) => {
-          const content = text.toLowerCase();
-          const words = new Set(content.match(/\b[a-z0-9']+\b/g) || []);
-          const hasWord = (word) => words.has(word);
-          if (hasWord('hello') || hasWord('hi')) return 'HELLO HUMAN. SYSTEM STATUS: ONLINE.';
-          if (hasWord('help')) return 'AVAILABLE COMMANDS: HELLO, HELP, GAME, STATUS.';
-          if (hasWord('game')) return 'A STRANGE GAME. THE ONLY WINNING MOVE IS NOT TO PLAY.';
-          if (hasWord('status')) return 'ALL SYSTEMS NOMINAL. DEFCON LEVEL: GREEN.';
-          return 'INPUT RECEIVED. PROCESSING COMPLETE.';
-        };
-        const BOT_RESPONSE_DELAY_MS = 240;
-
-        const appendLine = (prefix, text) => {
-          const item = document.createElement('li');
-          item.textContent = `> ${prefix}: ${text}`;
-          chatLog.appendChild(item);
-          chatLog.scrollTop = chatLog.scrollHeight;
-        };
-
-        const openChat = () => {
-          chatReturnFocusEl = document.activeElement;
-          chatModal.classList.add('open');
-          requestAnimationFrame(() => chatInput.focus());
-        };
-        const closeChat = () => {
-          chatModal.classList.remove('open');
-          if (chatReturnFocusEl) {
-            chatReturnFocusEl.focus();
-          } else {
-            pacmanTrigger.focus();
-          }
-        };
-
-        pacmanTrigger.addEventListener('click', openChat);
-        chatClose.addEventListener('click', closeChat);
-        chatModal.addEventListener('click', e => {
-          if (e.target === chatModal) closeChat();
-        });
-        document.addEventListener('keydown', e => {
-          if (!chatModal.classList.contains('open')) return;
-          if (e.key === 'Escape') {
-            closeChat();
-            return;
-          }
-          if (e.key !== 'Tab') return;
-          const focusable = chatModal.querySelectorAll(FOCUSABLE_SELECTOR);
-          if (!focusable.length) return;
-          const first = focusable[0];
-          const last = focusable[focusable.length - 1];
-          if (e.shiftKey && document.activeElement === first) {
-            e.preventDefault();
-            last.focus();
-          } else if (!e.shiftKey && document.activeElement === last) {
-            e.preventDefault();
-            first.focus();
-          }
-        });
-
-        chatForm.addEventListener('submit', e => {
-          e.preventDefault();
-          const input = chatInput.value.trim();
-          if (!input) return;
-          appendLine('YOU', input);
-          chatInput.value = '';
-          setTimeout(() => appendLine('JOSHUA', botReply(input)), BOT_RESPONSE_DELAY_MS);
-        });
       })();
     </script>
   </body>
