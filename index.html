@@ -236,13 +236,6 @@
         hullGeo.applyMatrix4(new THREE.Matrix4().makeScale(1.0, 0.28, 1.9));
         group.add(new THREE.Mesh(hullGeo, mat));
 
-        // Cockpit: low-poly dome (4 longitudinal segments → faceted pyramid shape)
-        // positioned forward-top of the hull.
-        const cockpitGeo = new THREE.SphereGeometry(0.18, 4, 2, 0, Math.PI * 2, 0, Math.PI / 2);
-        const cockpit = new THREE.Mesh(cockpitGeo, mat);
-        cockpit.position.set(0, 0.18, -0.48);
-        group.add(cockpit);
-
         // Swept wings: thin boxes angled 14° back from the mid-fuselage.
         const portWingGeo = new THREE.BoxGeometry(0.85, 0.06, 0.75);
         const portWing = new THREE.Mesh(portWingGeo, mat);
@@ -255,6 +248,21 @@
         stbdWing.position.set(0.72, 0, 0.1);
         stbdWing.rotation.y = -0.25;
         group.add(stbdWing);
+
+        // Wing-mounted lazers.
+        const portLazerGeo = new THREE.CylinderGeometry(0.025, 0.025, 0.55, 6);
+        portLazerGeo.applyMatrix4(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+        const portLazer = new THREE.Mesh(portLazerGeo, mat);
+        portLazer.position.set(-1.12, 0.01, -0.2);
+        portLazer.rotation.y = 0.25;
+        group.add(portLazer);
+
+        const stbdLazerGeo = new THREE.CylinderGeometry(0.025, 0.025, 0.55, 6);
+        stbdLazerGeo.applyMatrix4(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+        const stbdLazer = new THREE.Mesh(stbdLazerGeo, mat);
+        stbdLazer.position.set(1.12, 0.01, -0.2);
+        stbdLazer.rotation.y = -0.25;
+        group.add(stbdLazer);
 
         // Twin engine nacelles: hexagonal cylinders at the rear flanks.
         const portPodGeo = new THREE.CylinderGeometry(0.09, 0.14, 0.55, 6);
