@@ -504,7 +504,7 @@
           <li>&gt; GREETINGS PROFESSOR FALKEN. SHALL WE PLAY A GAME?</li>
         </ul>
         <form id="chat-form">
-          <input id="chat-input" type="text" autocomplete="off" placeholder="TYPE COMMAND..." />
+          <input id="chat-input" type="text" autocomplete="off" placeholder="TYPE COMMAND..." aria-label="Chat command input" />
           <button id="chat-send" type="submit">SEND</button>
         </form>
       </div>
@@ -758,6 +758,7 @@
         const chatForm = document.getElementById('chat-form');
         const chatInput = document.getElementById('chat-input');
         const chatLog = document.getElementById('chat-log');
+        const FOCUSABLE_SELECTOR = 'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
         let chatReturnFocusEl = null;
 
         const botReply = (text) => {
@@ -770,7 +771,7 @@
           if (hasWord('status')) return 'ALL SYSTEMS NOMINAL. DEFCON LEVEL: GREEN.';
           return 'INPUT RECEIVED. PROCESSING COMPLETE.';
         };
-        const CHAT_RESPONSE_DELAY_MS = 240;
+        const BOT_RESPONSE_DELAY_MS = 240;
 
         const appendLine = (prefix, text) => {
           const item = document.createElement('li');
@@ -805,9 +806,7 @@
             return;
           }
           if (e.key !== 'Tab') return;
-          const focusable = chatModal.querySelectorAll(
-            'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
-          );
+          const focusable = chatModal.querySelectorAll(FOCUSABLE_SELECTOR);
           if (!focusable.length) return;
           const first = focusable[0];
           const last = focusable[focusable.length - 1];
@@ -826,7 +825,7 @@
           if (!input) return;
           appendLine('YOU', input);
           chatInput.value = '';
-          setTimeout(() => appendLine('JOSHUA', botReply(input)), CHAT_RESPONSE_DELAY_MS);
+          setTimeout(() => appendLine('JOSHUA', botReply(input)), BOT_RESPONSE_DELAY_MS);
         });
       })();
     </script>
