@@ -357,11 +357,11 @@
       function buildSaturn(planetMat, ringMat) {
         const group = new THREE.Group();
 
-        const planetGeo = new THREE.SphereGeometry(0.62, 48, 48);
+        const planetGeo = new THREE.SphereGeometry(0.62, 32, 32);
         const planet = new THREE.Mesh(planetGeo, planetMat);
         group.add(planet);
 
-        const ringGeo = new THREE.RingGeometry(0.86, 1.33, 96);
+        const ringGeo = new THREE.RingGeometry(0.86, 1.33, 72);
         const ring = new THREE.Mesh(ringGeo, ringMat);
         ring.rotation.x = Math.PI / 2.35;
         group.add(ring);
