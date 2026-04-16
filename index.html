@@ -409,6 +409,13 @@
         cursor: pointer;
         font: inherit;
       }
+      @media (max-width: 640px), (max-height: 560px) {
+        #pacman-trigger {
+          top: auto;
+          bottom: 18px;
+          transform: none;
+        }
+      }
     </style>
   </head>
   <body>
@@ -755,13 +762,15 @@
 
         const botReply = (text) => {
           const content = text.toLowerCase();
-          const hasWord = (word) => new RegExp(`\\b${word}\\b`, 'i').test(content);
+          const words = new Set(content.match(/\b[a-z0-9']+\b/g) || []);
+          const hasWord = (word) => words.has(word);
           if (hasWord('hello') || hasWord('hi')) return 'HELLO HUMAN. SYSTEM STATUS: ONLINE.';
           if (hasWord('help')) return 'AVAILABLE COMMANDS: HELLO, HELP, GAME, STATUS.';
           if (hasWord('game')) return 'A STRANGE GAME. THE ONLY WINNING MOVE IS NOT TO PLAY.';
           if (hasWord('status')) return 'ALL SYSTEMS NOMINAL. DEFCON LEVEL: GREEN.';
           return 'INPUT RECEIVED. PROCESSING COMPLETE.';
         };
+        const CHAT_RESPONSE_DELAY_MS = 240;
 
         const appendLine = (prefix, text) => {
           const item = document.createElement('li');
@@ -817,7 +826,7 @@
           if (!input) return;
           appendLine('YOU', input);
           chatInput.value = '';
-          setTimeout(() => appendLine('JOSHUA', botReply(input)), 240);
+          setTimeout(() => appendLine('JOSHUA', botReply(input)), CHAT_RESPONSE_DELAY_MS);
         });
       })();
     </script>
