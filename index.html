@@ -327,6 +327,10 @@
       #pacman-trigger:focus-visible::before {
         animation: pacman-chomp 0.24s steps(1, end) infinite;
       }
+      #pacman-trigger:focus-visible {
+        outline: 2px solid #ffffff;
+        outline-offset: 3px;
+      }
       @keyframes pacman-chomp {
         0%, 100% { clip-path: polygon(100% 50%, 58% 18%, 58% 82%); }
         50% { clip-path: polygon(100% 50%, 70% 44%, 70% 56%); }
@@ -747,6 +751,7 @@
         const chatForm = document.getElementById('chat-form');
         const chatInput = document.getElementById('chat-input');
         const chatLog = document.getElementById('chat-log');
+        let chatReturnFocusEl = null;
 
         const botReply = (text) => {
           const content = text.toLowerCase();
@@ -765,10 +770,18 @@
         };
 
         const openChat = () => {
+          chatReturnFocusEl = document.activeElement;
           chatModal.classList.add('open');
           requestAnimationFrame(() => chatInput.focus());
         };
-        const closeChat = () => chatModal.classList.remove('open');
+        const closeChat = () => {
+          chatModal.classList.remove('open');
+          if (chatReturnFocusEl && typeof chatReturnFocusEl.focus === 'function') {
+            chatReturnFocusEl.focus();
+          } else {
+            pacmanTrigger.focus();
+          }
+        };
 
         pacmanTrigger.addEventListener('click', openChat);
         chatClose.addEventListener('click', closeChat);
@@ -776,7 +789,25 @@
           if (e.target === chatModal) closeChat();
         });
         document.addEventListener('keydown', e => {
-          if (e.key === 'Escape' && chatModal.classList.contains('open')) closeChat();
+          if (!chatModal.classList.contains('open')) return;
+          if (e.key === 'Escape') {
+            closeChat();
+            return;
+          }
+          if (e.key !== 'Tab') return;
+          const focusable = chatModal.querySelectorAll(
+            'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+          );
+          if (!focusable.length) return;
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
         });
 
         chatForm.addEventListener('submit', e => {
