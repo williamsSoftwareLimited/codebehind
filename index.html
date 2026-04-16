@@ -237,18 +237,73 @@
       }
 
       #dot {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 0.72em;
+        height: 0.72em;
         transform: translate(-52px, -40px);
-        color: #38bdf8;
-        cursor: pointer;
-        padding: 8px; /* larger touch target */
       }
-      /* dot-rotate triggered by JS class instead of :hover */
-      #dot.spinning {
-        animation: 1000s infinite alternate dot-rotate;
+      #dot .quazar-core {
+        width: 56%;
+        height: 56%;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 35%, #1f2937 0%, #06080c 52%, #000000 100%);
+        box-shadow: 0 0 0.18em rgba(10, 10, 10, 0.95), 0 0 0.42em rgba(56, 189, 248, 0.18);
+        z-index: 3;
       }
-      @keyframes dot-rotate {
-        from { transform: translate(-52px, -40px) rotate(0deg); }
-        to   { transform: translate(-52px, -42px) rotate(600000deg); }
+      #dot .quazar-ring {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: conic-gradient(
+          from 0deg,
+          rgba(56, 189, 248, 0.24) 0deg,
+          rgba(30, 58, 138, 0.4) 110deg,
+          rgba(12, 17, 28, 0.9) 220deg,
+          rgba(56, 189, 248, 0.2) 360deg
+        );
+        filter: blur(0.4px);
+        animation: 26s linear infinite quazar-spin;
+        z-index: 1;
+      }
+      #dot .quazar-star {
+        position: absolute;
+        width: 0.11em;
+        height: 0.11em;
+        border-radius: 50%;
+        background: #dff4ff;
+        box-shadow: 0 0 0.09em #dff4ff;
+        animation: 3.4s ease-in-out infinite alternate quazar-twinkle;
+        z-index: 2;
+      }
+      #dot .quazar-star.s1 { top: 8%; left: 17%; }
+      #dot .quazar-star.s2 { top: 23%; right: 5%; animation-duration: 4.2s; }
+      #dot .quazar-star.s3 { bottom: 8%; left: 26%; animation-duration: 2.8s; }
+      #dot .spaceman {
+        position: absolute;
+        left: -0.48em;
+        top: 20%;
+        font-size: 0.23em;
+        line-height: 1;
+        transform-origin: center;
+        animation: 9s ease-in-out infinite spaceman-sink;
+        z-index: 4;
+      }
+      @keyframes quazar-spin {
+        from { transform: rotate(0deg); }
+        to   { transform: rotate(360deg); }
+      }
+      @keyframes quazar-twinkle {
+        0%   { opacity: 0.35; transform: scale(0.75); }
+        100% { opacity: 1; transform: scale(1.1); }
+      }
+      @keyframes spaceman-sink {
+        0%   { transform: translate(0, 0) scale(1) rotate(-18deg); opacity: 0.9; }
+        70%  { transform: translate(0.34em, 0.01em) scale(0.7) rotate(16deg); opacity: 0.95; }
+        100% { transform: translate(0.45em, 0.02em) scale(0.42) rotate(22deg); opacity: 0.18; }
       }
 
       #n   { transform: translate(-62px, 2px); }
@@ -345,7 +400,7 @@
 
       <code-behind aria-label="Codebehind">
         <span class="saturn-orbit"><span id="C">C</span> <span id="o">o</span></span> <span id="d">d</span> <span id="e">e</span> <span id="b">b</span> <span id="e">e</span>
-        <span class='fade-out' id="h">h</span> <span id="i">ı</span> <span id="dot">✺</span> <span id="n">n</span> <span id="end">d</span>
+        <span class='fade-out' id="h">h</span> <span id="i">ı</span> <span id="dot"><span class="quazar-ring"></span><span class="quazar-core"></span><span class="quazar-star s1"></span><span class="quazar-star s2"></span><span class="quazar-star s3"></span><span class="spaceman">🧑‍🚀</span></span> <span id="n">n</span> <span id="end">d</span>
       </code-behind>
 
     </div>
@@ -604,14 +659,6 @@
         }
         h_elem.addEventListener('click', toggleH);
         h_elem.addEventListener('touchend', e => { e.preventDefault(); toggleH(); });
-
-        // --- #dot: tap/click to toggle spin ---
-        const dot = document.getElementById('dot');
-        function toggleDot() {
-          dot.classList.toggle('spinning');
-        }
-        dot.addEventListener('click', toggleDot);
-        dot.addEventListener('touchend', e => { e.preventDefault(); toggleDot(); });
 
         // --- #end: tap/click to trigger wobble ---
         const end = document.getElementById('end');
