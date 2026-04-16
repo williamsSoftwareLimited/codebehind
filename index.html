@@ -249,20 +249,20 @@
         stbdWing.rotation.y = -0.25;
         group.add(stbdWing);
 
-        // Wing-mounted lazers.
-        const portLazerGeo = new THREE.CylinderGeometry(0.025, 0.025, 0.55, 6);
-        portLazerGeo.applyMatrix4(new THREE.Matrix4().makeRotationX(Math.PI / 2));
-        const portLazer = new THREE.Mesh(portLazerGeo, mat);
-        portLazer.position.set(-1.12, 0.01, -0.2);
-        portLazer.rotation.y = 0.25;
-        group.add(portLazer);
+        // Wing-mounted lasers.
+        const portLaserGeo = new THREE.CylinderGeometry(0.025, 0.025, 0.55, 6);
+        portLaserGeo.applyMatrix4(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+        const portLaser = new THREE.Mesh(portLaserGeo, mat);
+        portLaser.position.set(-1.12, 0.01, -0.2);
+        portLaser.rotation.y = 0.25;
+        group.add(portLaser);
 
-        const stbdLazerGeo = new THREE.CylinderGeometry(0.025, 0.025, 0.55, 6);
-        stbdLazerGeo.applyMatrix4(new THREE.Matrix4().makeRotationX(Math.PI / 2));
-        const stbdLazer = new THREE.Mesh(stbdLazerGeo, mat);
-        stbdLazer.position.set(1.12, 0.01, -0.2);
-        stbdLazer.rotation.y = -0.25;
-        group.add(stbdLazer);
+        const stbdLaserGeo = new THREE.CylinderGeometry(0.025, 0.025, 0.55, 6);
+        stbdLaserGeo.applyMatrix4(new THREE.Matrix4().makeRotationX(Math.PI / 2));
+        const stbdLaser = new THREE.Mesh(stbdLaserGeo, mat);
+        stbdLaser.position.set(1.12, 0.01, -0.2);
+        stbdLaser.rotation.y = -0.25;
+        group.add(stbdLaser);
 
         // Twin engine nacelles: hexagonal cylinders at the rear flanks.
         const portPodGeo = new THREE.CylinderGeometry(0.09, 0.14, 0.55, 6);
