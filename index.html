@@ -490,7 +490,7 @@
     <div id="chat-modal" role="dialog" aria-modal="true" aria-labelledby="chat-title">
       <div id="chat-window">
         <div id="chat-header">
-          <span id="chat-title">WOPR / JOSHUA TERMINAL</span>
+          <span id="chat-title">WOPR: JOSHUA TERMINAL</span>
           <button id="chat-close" type="button" aria-label="Close chat">X</button>
         </div>
         <ul id="chat-log" aria-live="polite">
@@ -755,10 +755,11 @@
 
         const botReply = (text) => {
           const content = text.toLowerCase();
-          if (content.includes('hello') || content.includes('hi')) return 'HELLO HUMAN. SYSTEM STATUS: ONLINE.';
-          if (content.includes('help')) return 'AVAILABLE COMMANDS: HELLO, HELP, GAME, STATUS.';
-          if (content.includes('game')) return 'A STRANGE GAME. THE ONLY WINNING MOVE IS NOT TO PLAY.';
-          if (content.includes('status')) return 'ALL SYSTEMS NOMINAL. DEFCON LEVEL: GREEN.';
+          const hasWord = (word) => new RegExp(`\\b${word}\\b`, 'i').test(content);
+          if (hasWord('hello') || hasWord('hi')) return 'HELLO HUMAN. SYSTEM STATUS: ONLINE.';
+          if (hasWord('help')) return 'AVAILABLE COMMANDS: HELLO, HELP, GAME, STATUS.';
+          if (hasWord('game')) return 'A STRANGE GAME. THE ONLY WINNING MOVE IS NOT TO PLAY.';
+          if (hasWord('status')) return 'ALL SYSTEMS NOMINAL. DEFCON LEVEL: GREEN.';
           return 'INPUT RECEIVED. PROCESSING COMPLETE.';
         };
 
@@ -776,7 +777,7 @@
         };
         const closeChat = () => {
           chatModal.classList.remove('open');
-          if (chatReturnFocusEl && typeof chatReturnFocusEl.focus === 'function') {
+          if (chatReturnFocusEl) {
             chatReturnFocusEl.focus();
           } else {
             pacmanTrigger.focus();
