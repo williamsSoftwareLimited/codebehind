@@ -675,6 +675,13 @@
         }
         h_elem.addEventListener('click', toggleH);
         h_elem.addEventListener('touchend', e => { e.preventDefault(); toggleH(); });
+        window.addEventListener('beforeunload', () => {
+          if (_hJumpInterval) {
+            clearInterval(_hJumpInterval);
+            _hJumpInterval = null;
+          }
+          clearHJumpTimers();
+        });
 
         // --- #end: tap/click to trigger wobble ---
         const end = document.getElementById('end');
