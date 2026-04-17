@@ -617,6 +617,7 @@
 
         function runHJump() {
           h_elem.classList.remove('jump-up');
+          // Force reflow to restart animation
           void h_elem.offsetWidth;
           h_elem.classList.add('jump-up');
           _hJumpClearTimer = setTimeout(() => {
@@ -641,8 +642,9 @@
           h_elem.classList.remove('jump-up');
         }
 
+        let _hJumpInterval = null;
         if (!prefersReducedMotion) {
-          setInterval(triggerHJumpSequence, H_JUMP_INTERVAL_MS);
+          _hJumpInterval = setInterval(triggerHJumpSequence, H_JUMP_INTERVAL_MS);
         }
 
         // Bright flash: quick rise (0.4 s = H_RISE/1000), hold (~8 s = H_HOLD/1000),
