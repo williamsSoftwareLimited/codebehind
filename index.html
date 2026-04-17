@@ -226,6 +226,14 @@
         color: #7dd3fc;
         text-shadow: #22d3ee 1px 0 14px;
       }
+      #h.jump-up {
+        animation: 180ms ease-out h-jump-up;
+      }
+      @keyframes h-jump-up {
+        0%   { transform: translateY(0); }
+        50%  { transform: translateY(-4px); }
+        100% { transform: translateY(0); }
+      }
 
       /* Bright-flash state: intense white/cyan glow */
       #h.bright {
@@ -587,6 +595,57 @@
 
         // --- #h: click/tap to toggle fade and trigger brightness flash ---
         const h_elem = document.getElementById('h');
+        const H_JUMP_INTERVAL_MS = 12000;
+        const H_JUMP_GAP_MS = 1000;
+        const H_JUMP_PAUSE_MS = 60000;
+        const H_JUMP_ANIM_MS = 180;
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let hJumpPausedUntil = 0;
+        let _hJumpSecondTimer = null;
+        let _hJumpClearTimer = null;
+
+        function clearHJumpTimers() {
+          if (_hJumpSecondTimer) {
+            clearTimeout(_hJumpSecondTimer);
+            _hJumpSecondTimer = null;
+          }
+          if (_hJumpClearTimer) {
+            clearTimeout(_hJumpClearTimer);
+            _hJumpClearTimer = null;
+          }
+        }
+
+        function runHJump() {
+          h_elem.classList.remove('jump-up');
+          // Force reflow to restart animation
+          void h_elem.offsetWidth;
+          h_elem.classList.add('jump-up');
+          _hJumpClearTimer = setTimeout(() => {
+            h_elem.classList.remove('jump-up');
+            _hJumpClearTimer = null;
+          }, H_JUMP_ANIM_MS);
+        }
+
+        function triggerHJumpSequence() {
+          if (prefersReducedMotion || Date.now() < hJumpPausedUntil) return;
+          runHJump();
+          _hJumpSecondTimer = setTimeout(() => {
+            _hJumpSecondTimer = null;
+            if (Date.now() < hJumpPausedUntil) return;
+            runHJump();
+          }, H_JUMP_GAP_MS);
+        }
+
+        function pauseHJumpSequence() {
+          hJumpPausedUntil = Date.now() + H_JUMP_PAUSE_MS;
+          clearHJumpTimers();
+          h_elem.classList.remove('jump-up');
+        }
+
+        let _hJumpInterval = null;
+        if (!prefersReducedMotion) {
+          _hJumpInterval = setInterval(triggerHJumpSequence, H_JUMP_INTERVAL_MS);
+        }
 
         // Bright flash: quick rise (0.4 s = H_RISE/1000), hold (~8 s = H_HOLD/1000),
         // slow fade (2 s = H_FADE/1000) ≈ 10 s total.
@@ -606,6 +665,7 @@
         }
 
         function toggleH() {
+          pauseHJumpSequence();
           triggerBright();
           if (h_elem.classList.contains('fade-in')) {
             h_elem.classList.replace('fade-in', 'fade-out');
@@ -615,6 +675,13 @@
         }
         h_elem.addEventListener('click', toggleH);
         h_elem.addEventListener('touchend', e => { e.preventDefault(); toggleH(); });
+        window.addEventListener('beforeunload', () => {
+          if (_hJumpInterval) {
+            clearInterval(_hJumpInterval);
+            _hJumpInterval = null;
+          }
+          clearHJumpTimers();
+        });
 
         // --- #end: tap/click to trigger wobble ---
         const end = document.getElementById('end');
