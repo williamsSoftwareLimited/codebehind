@@ -1,0 +1,34 @@
+<?php
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *'); // Restrict this in production
+
+$apiKey = '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'; // Store in env var ideally
+
+$input = json_decode(file_get_contents('php://input'), true);
+$userMessage = $input['message'] ?? '';
+
+$payload = [
+    'model' => 'claude-sonnet-4-20250514',
+    'max_tokens' => 1024,
+    'messages' => [
+        ['role' => 'user', 'content' => $userMessage]
+    ]
+];
+
+$ch = curl_init('https://api.anthropic.com/v1/messages');
+
+curl_setopt_array($ch, [
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_POST => true,
+    CURLOPT_POSTFIELDS => json_encode($payload),
+    CURLOPT_HTTPHEADER => [
+        'Content-Type: application/json',
+        'x-api-key: ' . $apiKey,
+        'anthropic-version: 2023-06-01'
+    ]
+]);
+
+$response = curl_exec($ch);
+curl_close($ch);
+
+echo $response;

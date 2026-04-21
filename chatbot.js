@@ -16,6 +16,17 @@
     const content = String(text).toLowerCase();
     const words = new Set(content.match(/\b[a-z0-9']+\b/g) || []);
     const hasWord = (word) => words.has(word);
+
+    let returnTxt = '';
+    const response = fetch('claude.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text })
+    }).then(r => r.json).then(console.log);
+
+    //const data = await response.json();
+    //console.log(data.content[0].text);
+
     if (hasWord('hello') || hasWord('hi')) return 'HELLO HUMAN. SYSTEM STATUS: ONLINE.';
     if (hasWord('help')) return 'AVAILABLE COMMANDS: HELLO, HELP, GAME, STATUS.';
     if (hasWord('game')) return 'A STRANGE GAME. THE ONLY WINNING MOVE IS NOT TO PLAY.';
