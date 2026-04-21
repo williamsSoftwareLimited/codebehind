@@ -6,7 +6,9 @@ $userMessage = $input['message'] ?? '';
 
 $apiKey = getenv('CHAT_KEY');
 if (!$apiKey) {
-    die('Error: CHAT_KEY environment variable not set');
+    http_response_code(500);
+    echo json_encode(['error' => 'API key not configured']);
+    exit;
 }
 
 $data = [
