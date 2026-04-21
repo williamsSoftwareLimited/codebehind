@@ -2,7 +2,7 @@
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *'); // Restrict this in production
 
-$apiKey = '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'; // Store in env var ideally
+$apiKey = '{CLAUDE_API_KEY}'; // Store in env var ideally
 
 $input = json_decode(file_get_contents('php://input'), true);
 $userMessage = $input['message'] ?? '';
