@@ -4,7 +4,10 @@ header('Access-Control-Allow-Origin: *'); // Restrict this in production
 $input = json_decode(file_get_contents('php://input'), true);
 $userMessage = $input['message'] ?? '';
 
-$apiKey = ${{ secret.chat_key }}
+$apiKey = getenv('CHAT_KEY');
+if (!$apiKey) {
+    die('Error: CHAT_KEY environment variable not set');
+}
 
 $data = [
     'model' => 'claude-sonnet-4-20250514',
