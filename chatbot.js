@@ -18,7 +18,7 @@
     const hasWord = (word) => words.has(word);
 
     let returnTxt = '';
-    const response = fetch('claude.php', {
+    const response = fetch('https://codebehind.org/claude.php', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: text })
