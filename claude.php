@@ -4,7 +4,7 @@ header('Access-Control-Allow-Origin: *'); // Restrict this in production
 $input = json_decode(file_get_contents('php://input'), true);
 $userMessage = $input['message'] ?? '';
 
-$apiKey = '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'; // Store in env var ideally
+$apiKey = ${{ secret.chat_key }}
 
 $data = [
     'model' => 'claude-sonnet-4-20250514',
