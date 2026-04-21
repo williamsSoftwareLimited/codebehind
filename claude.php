@@ -2,8 +2,6 @@
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *'); // Restrict this in production
 
-$apiKey = '{CLAUDE_API_KEY}'; // Store in env var ideally
-
 $input = json_decode(file_get_contents('php://input'), true);
 $userMessage = $input['message'] ?? '';
 
@@ -23,7 +21,7 @@ curl_setopt_array($ch, [
     CURLOPT_POSTFIELDS => json_encode($payload),
     CURLOPT_HTTPHEADER => [
         'Content-Type: application/json',
-        'x-api-key: ' . $apiKey,
+        'x-api-key: ' . ${{ secrets.CLAUDE_API_KEY }},
         'anthropic-version: 2023-06-01'
     ]
 ]);
