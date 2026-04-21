@@ -10,6 +10,8 @@ jobs:
 
     - name: Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+      env:
+        CHAT_KEY: ${{ secrets.CHAT_KEY }}
       with:
         server: ftp.codebehind.org
         username: codebehindorg_git
